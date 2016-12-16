@@ -1,0 +1,31 @@
+﻿syntax = "proto3";
+
+package mb;
+
+service Bundle {
+  rpc GetBundle (BundleRequest) returns (BundleResponse) {}
+}
+
+service Asset {
+  rpc GetAssets (stream AssetRequest) returns (stream AssetResponse) {}
+}
+
+// The requests the bundle by ID
+message BundleRequest {
+  int32 id = 1;
+}
+
+// Initial response with the ID, number of elements and each filename
+message BundleResponse {
+  int32 id = 1;
+  repeated int32 asset_id = 3;
+}
+
+message AssetRequest {
+  int32 id = 1;
+}
+
+message AssetResponse {
+  int32 asset_id = 1;
+  string content = 2;
+}
