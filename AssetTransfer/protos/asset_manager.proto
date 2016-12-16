@@ -18,14 +18,14 @@ message BundleRequest {
 // Initial response with the ID, number of elements and each filename
 message BundleResponse {
   int32 id = 1;
-  repeated int32 asset_id = 3;
+  repeated string asset_id = 3;
 }
 
 message AssetRequest {
-  int32 id = 1;
+  string id = 1;
 }
 
 message AssetResponse {
-  int32 asset_id = 1;
-  string content = 2;
+  string asset_id = 1;
+  bytes content = 2;
 }

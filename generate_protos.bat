@@ -36,7 +36,7 @@ cd /d %~dp0
 
 set TOOLS_PATH=D:\Documents\grpc_exparaments\grpc\examples\csharp\helloworld\packages\Grpc.Tools.1.0.1\tools\windows_x64
 
-%TOOLS_PATH%\protoc.exe -I Greeter/protos --csharp_out Greeter Greeter/protos/asset_manager.proto --grpc_out Greeter --plugin=protoc-gen-grpc=%TOOLS_PATH%\grpc_csharp_plugin.exe
+%TOOLS_PATH%\protoc.exe -I AssetTransfer/protos --csharp_out AssetTransfer AssetTransfer/protos/asset_manager.proto --grpc_out AssetTransfer --plugin=protoc-gen-grpc=%TOOLS_PATH%\grpc_csharp_plugin.exe
 
 endlocal
 pause

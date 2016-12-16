@@ -24,9 +24,9 @@ namespace Mb {
           string.Concat(
             "ChNhc3NldF9tYW5hZ2VyLnByb3RvEgJtYiIbCg1CdW5kbGVSZXF1ZXN0EgoK",
             "AmlkGAEgASgFIi4KDkJ1bmRsZVJlc3BvbnNlEgoKAmlkGAEgASgFEhAKCGFz",
-            "c2V0X2lkGAMgAygFIhoKDEFzc2V0UmVxdWVzdBIKCgJpZBgBIAEoBSIyCg1B",
-            "c3NldFJlc3BvbnNlEhAKCGFzc2V0X2lkGAEgASgFEg8KB2NvbnRlbnQYAiAB",
-            "KAkyPgoGQnVuZGxlEjQKCUdldEJ1bmRsZRIRLm1iLkJ1bmRsZVJlcXVlc3Qa",
+            "c2V0X2lkGAMgAygJIhoKDEFzc2V0UmVxdWVzdBIKCgJpZBgBIAEoCSIyCg1B",
+            "c3NldFJlc3BvbnNlEhAKCGFzc2V0X2lkGAEgASgJEg8KB2NvbnRlbnQYAiAB",
+            "KAwyPgoGQnVuZGxlEjQKCUdldEJ1bmRsZRIRLm1iLkJ1bmRsZVJlcXVlc3Qa",
             "Ei5tYi5CdW5kbGVSZXNwb25zZSIAMj8KBUFzc2V0EjYKCUdldEFzc2V0cxIQ",
             "Lm1iLkFzc2V0UmVxdWVzdBoRLm1iLkFzc2V0UmVzcG9uc2UiACgBMAFiBnBy",
             "b3RvMw=="));
@@ -212,11 +212,11 @@ namespace Mb {
 
     /// <summary>Field number for the "asset_id" field.</summary>
     public const int AssetIdFieldNumber = 3;
-    private static readonly pb::FieldCodec<int> _repeated_assetId_codec
-        = pb::FieldCodec.ForInt32(26);
-    private readonly pbc::RepeatedField<int> assetId_ = new pbc::RepeatedField<int>();
+    private static readonly pb::FieldCodec<string> _repeated_assetId_codec
+        = pb::FieldCodec.ForString(26);
+    private readonly pbc::RepeatedField<string> assetId_ = new pbc::RepeatedField<string>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<int> AssetId {
+    public pbc::RepeatedField<string> AssetId {
       get { return assetId_; }
     }
 
@@ -293,8 +293,7 @@ namespace Mb {
             Id = input.ReadInt32();
             break;
           }
-          case 26:
-          case 24: {
+          case 26: {
             assetId_.AddEntriesFrom(input, _repeated_assetId_codec);
             break;
           }
@@ -338,12 +337,12 @@ namespace Mb {
 
     /// <summary>Field number for the "id" field.</summary>
     public const int IdFieldNumber = 1;
-    private int id_;
+    private string id_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int Id {
+    public string Id {
       get { return id_; }
       set {
-        id_ = value;
+        id_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
@@ -367,7 +366,7 @@ namespace Mb {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Id != 0) hash ^= Id.GetHashCode();
+      if (Id.Length != 0) hash ^= Id.GetHashCode();
       return hash;
     }
 
@@ -378,17 +377,17 @@ namespace Mb {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Id != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(Id);
+      if (Id.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Id);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Id != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Id);
+      if (Id.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Id);
       }
       return size;
     }
@@ -398,7 +397,7 @@ namespace Mb {
       if (other == null) {
         return;
       }
-      if (other.Id != 0) {
+      if (other.Id.Length != 0) {
         Id = other.Id;
       }
     }
@@ -411,8 +410,8 @@ namespace Mb {
           default:
             input.SkipLastField();
             break;
-          case 8: {
-            Id = input.ReadInt32();
+          case 10: {
+            Id = input.ReadString();
             break;
           }
         }
@@ -456,20 +455,20 @@ namespace Mb {
 
     /// <summary>Field number for the "asset_id" field.</summary>
     public const int AssetIdFieldNumber = 1;
-    private int assetId_;
+    private string assetId_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int AssetId {
+    public string AssetId {
       get { return assetId_; }
       set {
-        assetId_ = value;
+        assetId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
 
     /// <summary>Field number for the "content" field.</summary>
     public const int ContentFieldNumber = 2;
-    private string content_ = "";
+    private pb::ByteString content_ = pb::ByteString.Empty;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Content {
+    public pb::ByteString Content {
       get { return content_; }
       set {
         content_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
@@ -497,7 +496,7 @@ namespace Mb {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (AssetId != 0) hash ^= AssetId.GetHashCode();
+      if (AssetId.Length != 0) hash ^= AssetId.GetHashCode();
       if (Content.Length != 0) hash ^= Content.GetHashCode();
       return hash;
     }
@@ -509,24 +508,24 @@ namespace Mb {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (AssetId != 0) {
-        output.WriteRawTag(8);
-        output.WriteInt32(AssetId);
+      if (AssetId.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(AssetId);
       }
       if (Content.Length != 0) {
         output.WriteRawTag(18);
-        output.WriteString(Content);
+        output.WriteBytes(Content);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (AssetId != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(AssetId);
+      if (AssetId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(AssetId);
       }
       if (Content.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Content);
+        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Content);
       }
       return size;
     }
@@ -536,7 +535,7 @@ namespace Mb {
       if (other == null) {
         return;
       }
-      if (other.AssetId != 0) {
+      if (other.AssetId.Length != 0) {
         AssetId = other.AssetId;
       }
       if (other.Content.Length != 0) {
@@ -552,12 +551,12 @@ namespace Mb {
           default:
             input.SkipLastField();
             break;
-          case 8: {
-            AssetId = input.ReadInt32();
+          case 10: {
+            AssetId = input.ReadString();
             break;
           }
           case 18: {
-            Content = input.ReadString();
+            Content = input.ReadBytes();
             break;
           }
         }

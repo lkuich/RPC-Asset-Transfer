@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{A7706C84-92D2-4B7A-B779-76B64D2950EC}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>GreeterServer</RootNamespace>
-    <AssemblyName>GreeterServer</AssemblyName>
+    <RootNamespace>AssetTransferServer</RootNamespace>
+    <AssemblyName>AssetTransferServer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <NuGetPackageImportStamp>9c7b2963</NuGetPackageImportStamp>
   </PropertyGroup>

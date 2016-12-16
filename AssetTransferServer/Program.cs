@@ -6,37 +6,38 @@ using System.Linq;
 using Mb;
 using System.Collections.Generic;
 
-
 namespace AssetTransferServer
 {
-    class TestData
-    {
-        public List<BundleResponse> ExampleBundles;
-        public TestData() {
-            ExampleBundles = new List<BundleResponse>()
-            {
-                new BundleResponse { Id = 1, AssetId = { 1, 2, 3 } },
-                new BundleResponse { Id = 2, AssetId = { 10, 20, 30 } },
-                new BundleResponse { Id = 3, AssetId = { 11, 12, 13 } }
-            };
-        }
-    }
-
     // Runs server
     class Program
     {
-        const int Port = 50051;
+        private const int PORT = 50051;
 
         public static void Main(string[] args)
         {
+            var fileManager = new FileManager();
+
+            // Load directory into a bundle, using ints for this example because no one wants to type GUID's
+            var bundles = new List<BundleResponse>()
+            {
+                fileManager.LoadAssets(1, @"D:\Desktop\mission1"),
+                fileManager.LoadAssets(2, @"D:\Desktop\mission2")
+            };
+            if (bundles.Contains(null))
+            {
+                Console.WriteLine("One or more asset directories do not exist. Exiting..");
+                Console.ReadLine();
+                return;
+            }
+            
             Server server = new Server
             {
-                Services = { Bundle.BindService(new BundleImpl()), Asset.BindService(new AssetImpl()) },
-                Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
+                Services = { Bundle.BindService(new BundleImpl(bundles)), Asset.BindService(new AssetImpl(fileManager)) },
+                Ports = { new ServerPort("localhost", PORT, ServerCredentials.Insecure) }
             };
             server.Start();
 
-            Console.WriteLine("Greeter server listening on port " + Port);
+            Console.WriteLine("Server listening on port " + PORT);
             Console.WriteLine("Press any key to stop the server...");
             Console.ReadKey();
 
@@ -47,11 +48,16 @@ namespace AssetTransferServer
     // Simple RPC, server replys to a client request
     class BundleImpl : Bundle.BundleBase
     {
+        public IEnumerable<BundleResponse> Bundles { get; private set; }
+        public BundleImpl(IEnumerable<BundleResponse> bundles)
+        {
+            Bundles = bundles;           
+        }
+
         public override Task<BundleResponse> GetBundle(BundleRequest request, ServerCallContext context)
         {
             // Get bundle by ID
-            var testData = new TestData();
-            var reply = testData.ExampleBundles.Single(b => b.Id == request.Id);
+            var reply = Bundles.Single(b => b.Id == request.Id);
             
             return Task.FromResult(reply);
         }
@@ -61,9 +67,12 @@ namespace AssetTransferServer
     class AssetImpl : Asset.AssetBase
     {
         private List<AssetRequest> prevRequests;
-        public AssetImpl()
+        private Dictionary<string, byte[]> assets;
+
+        public AssetImpl(FileManager fileManager)
         {
             prevRequests = new List<AssetRequest>();
+            assets = fileManager.Assets;
         }
         
         public override async Task GetAssets(IAsyncStreamReader<AssetRequest> requestStream, IServerStreamWriter<AssetResponse> responseStream, ServerCallContext context)
@@ -73,7 +82,11 @@ namespace AssetTransferServer
                 var currentRequest = requestStream.Current;
                 prevRequests.Add(currentRequest);
 
-                var response = new AssetResponse() { AssetId = currentRequest.Id, Content = "test" };
+                var response = new AssetResponse() {
+                    AssetId = currentRequest.Id,
+                    Content = Google.Protobuf.ByteString.CopyFrom(assets[currentRequest.Id])
+                };
+                
                 await responseStream.WriteAsync(response);
             }
         }
