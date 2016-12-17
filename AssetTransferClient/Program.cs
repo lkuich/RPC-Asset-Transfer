@@ -5,6 +5,8 @@ using Mb;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
+using System.Diagnostics;
+
 namespace AssetTransferClient
 {
     class Program
@@ -39,7 +41,7 @@ namespace AssetTransferClient
                     break;
                 }
             }
-            
+
             channel.ShutdownAsync().Wait();
         }
 
@@ -50,7 +52,7 @@ namespace AssetTransferClient
                 yield return new AssetRequest { Id = assetId };
             }
         }
-        
+
         private static async Task Recieve(Asset.AssetClient assetClient, IEnumerable<AssetRequest> requests, int bundleId)
         {
             // Now that we have the asset ID's we're after, send each asset asynchronously
@@ -60,15 +62,21 @@ namespace AssetTransferClient
                 {
                     while (await call.ResponseStream.MoveNext())
                     {
-                        var then = DateTime.Now;
+                        var stopwatch = new Stopwatch();
+                        stopwatch.Start();
 
                         var response = call.ResponseStream.Current;
                         string assetId = response.AssetId;
 
-                        var now = DateTime.Now - then;
-                        
-                        Console.WriteLine("Received " + assetId + " in " + now.Milliseconds + " ms");
                         fileManager.WriteAsset(WORKING_DIR, bundleId, assetId, response.Content.ToByteArray());
+
+                        stopwatch.Stop();
+
+                        double ticks = stopwatch.ElapsedTicks;
+                        double milliseconds = (ticks / Stopwatch.Frequency) * 1000;
+                        double nanoseconds = (ticks / Stopwatch.Frequency) * 1000000000;
+
+                        Console.WriteLine(string.Format("Received and Wrote {0} in {1}ms/{2}ns", assetId, Math.Round(milliseconds, 2), Math.Round(nanoseconds, 2)));
                     }
                 });
 

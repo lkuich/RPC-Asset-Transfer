@@ -8,7 +8,6 @@ using System.Collections.Generic;
 
 namespace AssetTransferServer
 {
-    // Runs server
     class Program
     {
         private const string HOST = "localhost";
