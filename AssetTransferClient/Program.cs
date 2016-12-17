@@ -9,8 +9,9 @@ namespace AssetTransferClient
 {
     class Program
     {
-        private const string WORKING_DIR = @"D:\Desktop\mission_output";
+        private const string HOST = "localhost";
         private const int PORT = 50051;
+        private const string WORKING_DIR = @"D:\Desktop\mission_output";
 
         private static FileManager fileManager;
 
@@ -20,7 +21,7 @@ namespace AssetTransferClient
         public static void Main(string[] args)
         {
             fileManager = new FileManager();
-            Channel channel = new Channel("127.0.0.1:" + PORT, ChannelCredentials.Insecure);
+            Channel channel = new Channel(HOST + ":" + PORT, ChannelCredentials.Insecure);
 
             bundleClient = new Bundle.BundleClient(channel);
             assetClient = new Asset.AssetClient(channel);
@@ -59,10 +60,14 @@ namespace AssetTransferClient
                 {
                     while (await call.ResponseStream.MoveNext())
                     {
+                        var then = DateTime.Now;
+
                         var response = call.ResponseStream.Current;
                         string assetId = response.AssetId;
 
-                        Console.WriteLine("Received " + assetId);
+                        var now = DateTime.Now - then;
+                        
+                        Console.WriteLine("Received " + assetId + " in " + now.Milliseconds + " ms");
                         fileManager.WriteAsset(WORKING_DIR, bundleId, assetId, response.Content.ToByteArray());
                     }
                 });

@@ -11,6 +11,7 @@ namespace AssetTransferServer
     // Runs server
     class Program
     {
+        private const string HOST = "localhost";
         private const int PORT = 50051;
 
         public static void Main(string[] args)
@@ -33,7 +34,7 @@ namespace AssetTransferServer
             Server server = new Server
             {
                 Services = { Bundle.BindService(new BundleImpl(bundles)), Asset.BindService(new AssetImpl(fileManager)) },
-                Ports = { new ServerPort("localhost", PORT, ServerCredentials.Insecure) }
+                Ports = { new ServerPort(HOST, PORT, ServerCredentials.Insecure) }
             };
             server.Start();
 
