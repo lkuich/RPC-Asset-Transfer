@@ -3,17 +3,12 @@ using System.IO;
 
 namespace Mb
 {
-    public class FileManager
+    public static class FileManager
     {
-        public Dictionary<string, byte[]> Assets { get; private set; }
-
-        public FileManager(string workingDir = null)
-        {
-            Assets = new Dictionary<string, byte[]>();
-        }
+        public static Dictionary<string, byte[]> Assets = new Dictionary<string, byte[]>();
 
         // Load all assets into memory as a bundle
-        public BundleResponse LoadAssets(int bundleId, string dir)
+        public static BundleResponse LoadAssets(int bundleId, string dir)
         {
             if (Directory.Exists(dir))
             {
@@ -41,7 +36,7 @@ namespace Mb
         /// <param name="bundleId">Bundle ID, directory will be created in the root</param>
         /// <param name="assetId">ID of the asset to write, will be filename</param>
         /// <param name="content">Bytes to write</param>
-        public void WriteAsset(string workingDir, int bundleId, string assetId, byte[] content)
+        public static void WriteAsset(string workingDir, int bundleId, string assetId, byte[] content)
         {
             workingDir.TrimEnd('\\'); workingDir += "\\" + bundleId;
             

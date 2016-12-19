@@ -14,15 +14,12 @@ namespace AssetTransferClient
         private const string HOST = "localhost";
         private const int PORT = 50051;
         private const string WORKING_DIR = @"D:\Desktop\mission_output";
-
-        private static FileManager fileManager;
-
+        
         private static Bundle.BundleClient bundleClient;
         private static Asset.AssetClient assetClient;
 
         public static void Main(string[] args)
         {
-            fileManager = new FileManager();
             Channel channel = new Channel(HOST + ":" + PORT, ChannelCredentials.Insecure);
 
             bundleClient = new Bundle.BundleClient(channel);
@@ -32,8 +29,13 @@ namespace AssetTransferClient
             while (channel.State != ChannelState.Shutdown)
             {
                 int bundleId;
-                if (int.TryParse(Console.ReadLine(), out bundleId))
-                    Recieve(assetClient, GetAssets(bundleId), bundleId);
+                bool validId = int.TryParse(Console.ReadLine(), out bundleId);
+                var assets = GetAssets(bundleId);
+
+                if (validId && !System.Linq.Enumerable.Contains(assets, null))
+                {
+                    Recieve(assetClient, assets, bundleId);
+                }
                 else
                 {
                     Console.WriteLine("Couldn't parse input.\nPress any key to stop the server...");
@@ -47,6 +49,9 @@ namespace AssetTransferClient
 
         private static IEnumerable<AssetRequest> GetAssets(int bundleId)
         {
+            if (bundleId == -1)
+                yield return null;
+
             foreach (string assetId in bundleClient.GetBundle(new BundleRequest { Id = bundleId }).AssetId)
             {
                 yield return new AssetRequest { Id = assetId };
@@ -67,8 +72,8 @@ namespace AssetTransferClient
 
                         var response = call.ResponseStream.Current;
                         string assetId = response.AssetId;
-
-                        fileManager.WriteAsset(WORKING_DIR, bundleId, assetId, response.Content.ToByteArray());
+                        
+                        FileManager.WriteAsset(WORKING_DIR, bundleId, assetId, response.Content.ToByteArray());
 
                         stopwatch.Stop();
 

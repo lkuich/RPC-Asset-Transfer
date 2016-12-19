@@ -5,6 +5,7 @@ using Grpc.Core;
 using System.Linq;
 using Mb;
 using System.Collections.Generic;
+using System.IO;
 
 namespace AssetTransferServer
 {
@@ -13,35 +14,63 @@ namespace AssetTransferServer
         private const string HOST = "localhost";
         private const int PORT = 50051;
 
+        private static List<BundleResponse> bundles;
+
         public static void Main(string[] args)
         {
-            var fileManager = new FileManager();
-
             // Load directory into a bundle, using ints for this example because no one wants to type GUID's
-            var bundles = new List<BundleResponse>()
-            {
-                fileManager.LoadAssets(1, @"D:\Desktop\mission1"),
-                fileManager.LoadAssets(2, @"D:\Desktop\mission2")
-            };
+            bundles = new List<BundleResponse>();
+
             if (bundles.Contains(null))
             {
                 Console.WriteLine("One or more asset directories do not exist. Exiting..");
                 Console.ReadLine();
                 return;
             }
-            
+
             Server server = new Server
             {
-                Services = { Bundle.BindService(new BundleImpl(bundles)), Asset.BindService(new AssetImpl(fileManager)) },
+                Services = { Bundle.BindService(new BundleImpl(bundles)), Asset.BindService(new AssetImpl()) },
                 Ports = { new ServerPort(HOST, PORT, ServerCredentials.Insecure) }
             };
             server.Start();
 
             Console.WriteLine("Server listening on port " + PORT);
-            Console.WriteLine("Press any key to stop the server...");
-            Console.ReadKey();
+
+            while (true)
+            {
+                Console.Write("Enter a bundle (ID,path): ");
+
+                string bundleToLoad = Console.ReadLine();
+                if (bundleToLoad.ToLower() == "exit")
+                    break;
+                else
+                    loadBundle(bundleToLoad);
+            }
 
             server.ShutdownAsync().Wait();
+        }
+
+        private static void loadBundle(string input)
+        {
+            var sp = input.Split(',');
+
+            int id;
+            if (!int.TryParse(sp[0], out id))
+            {
+                Console.WriteLine("Could not load bundle, invalid ID");
+                return;
+            }
+
+            string path = sp[1];
+            if (!Directory.Exists(path))
+            {
+                Console.WriteLine("Could not load bundle, directory does not exist");
+                return;
+            }
+
+            bundles.Add(FileManager.LoadAssets(id, path));
+            Console.WriteLine("Serving bundle with id of " + id);
         }
     }
 
@@ -57,7 +86,14 @@ namespace AssetTransferServer
         public override Task<BundleResponse> GetBundle(BundleRequest request, ServerCallContext context)
         {
             // Get bundle by ID
-            var reply = Bundles.Single(b => b.Id == request.Id);
+            BundleResponse reply = new BundleResponse { Id = -1 };
+            try
+            {
+                reply = Bundles.Single(b => b.Id == request.Id);
+            } catch (Exception)
+            {
+
+            }
             
             return Task.FromResult(reply);
         }
@@ -67,12 +103,10 @@ namespace AssetTransferServer
     class AssetImpl : Asset.AssetBase
     {
         private List<AssetRequest> prevRequests;
-        private Dictionary<string, byte[]> assets;
 
-        public AssetImpl(FileManager fileManager)
+        public AssetImpl()
         {
             prevRequests = new List<AssetRequest>();
-            assets = fileManager.Assets;
         }
         
         public override async Task GetAssets(IAsyncStreamReader<AssetRequest> requestStream, IServerStreamWriter<AssetResponse> responseStream, ServerCallContext context)
@@ -84,7 +118,7 @@ namespace AssetTransferServer
 
                 var response = new AssetResponse() {
                     AssetId = currentRequest.Id,
-                    Content = Google.Protobuf.ByteString.CopyFrom(assets[currentRequest.Id])
+                    Content = Google.Protobuf.ByteString.CopyFrom(FileManager.Assets[currentRequest.Id])
                 };
                 
                 await responseStream.WriteAsync(response);
