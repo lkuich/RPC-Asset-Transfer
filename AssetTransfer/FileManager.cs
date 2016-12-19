@@ -45,5 +45,16 @@ namespace Mb
 
             File.WriteAllBytes(workingDir + "\\" + assetId, content);
         }
+
+        public static bool ReadFile(string path, out string output)
+        {
+            bool exists = File.Exists(path);
+            output = "";
+
+            if (exists)
+                output = File.ReadAllText(path);
+
+            return exists;
+        }
     }
 }

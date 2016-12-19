@@ -11,13 +11,24 @@ namespace AssetTransferServer
 {
     class Program
     {
-        private const string HOST = "localhost";
-        private const int PORT = 50051;
+        private static string HOST = "localhost";
+        private static int PORT = 50051;
 
         private static List<BundleResponse> bundles;
 
         public static void Main(string[] args)
         {
+            string netconfig;
+            // Read network config
+            if (FileManager.ReadFile(".config", out netconfig))
+            {
+                var config = netconfig.Split(':');
+                HOST = config[0];
+
+                if (config.Length > 1)
+                    PORT = int.Parse(config[1]);
+            }
+
             // Load directory into a bundle, using ints for this example because no one wants to type GUID's
             bundles = new List<BundleResponse>();
 
