@@ -7,31 +7,26 @@ using Mb;
 using System.Collections.Generic;
 using System.IO;
 
-namespace AssetTransferServer
+namespace AssetTransfer
 {
-    class Program
+    public class AssetTransferServer
     {
-        private static string HOST = "localhost";
-        private static int PORT = 50051;
+        public string Host { get; private set; }
+        public int Port { get; private set; }
 
-        private static List<BundleResponse> bundles;
+        private List<BundleResponse> bundles;
 
-        public static void Main(string[] args)
+        public AssetTransferServer(string host = "localhost", int port = 50051)
         {
-            string netconfig;
-            // Read network config
-            if (FileManager.ReadFile(".config", out netconfig))
-            {
-                var config = netconfig.Split(':');
-                HOST = config[0];
-
-                if (config.Length > 1)
-                    PORT = int.Parse(config[1]);
-            }
+            this.Host = host;
+            this.Port = port;
 
             // Load directory into a bundle, using ints for this example because no one wants to type GUID's
             bundles = new List<BundleResponse>();
+        }
 
+        public void Start()
+        {
             if (bundles.Contains(null))
             {
                 Console.WriteLine("One or more asset directories do not exist. Exiting..");
@@ -42,11 +37,11 @@ namespace AssetTransferServer
             Server server = new Server
             {
                 Services = { Bundle.BindService(new BundleImpl(bundles)), Asset.BindService(new AssetImpl()) },
-                Ports = { new ServerPort(HOST, PORT, ServerCredentials.Insecure) }
+                Ports = { new ServerPort(Host, Port, ServerCredentials.Insecure) }
             };
             server.Start();
 
-            Console.WriteLine("Server listening on port " + PORT);
+            Console.WriteLine("Server listening on port " + Port);
 
             while (true)
             {
@@ -56,13 +51,13 @@ namespace AssetTransferServer
                 if (bundleToLoad.ToLower() == "exit")
                     break;
                 else
-                    loadBundle(bundleToLoad);
+                    LoadBundle(bundleToLoad);
             }
 
             server.ShutdownAsync().Wait();
         }
 
-        private static void loadBundle(string input)
+        private void LoadBundle(string input)
         {
             var sp = input.Split(',');
 

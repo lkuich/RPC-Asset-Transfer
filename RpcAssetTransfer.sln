@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetTransferServer", "Asse
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetTransferClient", "AssetTransferClient\AssetTransferClient.csproj", "{ACCF4597-3748-4117-8633-1CB767F8CCC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetTest", "AssetTest\AssetTest.csproj", "{5E53A952-7FB5-4945-9E7C-8A0FACAACE5F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,14 @@ Global
 		{ACCF4597-3748-4117-8633-1CB767F8CCC3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ACCF4597-3748-4117-8633-1CB767F8CCC3}.Release|x64.ActiveCfg = Release|x64
 		{ACCF4597-3748-4117-8633-1CB767F8CCC3}.Release|x64.Build.0 = Release|x64
+		{5E53A952-7FB5-4945-9E7C-8A0FACAACE5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E53A952-7FB5-4945-9E7C-8A0FACAACE5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E53A952-7FB5-4945-9E7C-8A0FACAACE5F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5E53A952-7FB5-4945-9E7C-8A0FACAACE5F}.Debug|x64.Build.0 = Debug|Any CPU
+		{5E53A952-7FB5-4945-9E7C-8A0FACAACE5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E53A952-7FB5-4945-9E7C-8A0FACAACE5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E53A952-7FB5-4945-9E7C-8A0FACAACE5F}.Release|x64.ActiveCfg = Release|Any CPU
+		{5E53A952-7FB5-4945-9E7C-8A0FACAACE5F}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

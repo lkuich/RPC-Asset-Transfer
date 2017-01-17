@@ -7,25 +7,33 @@ using System.Collections.Generic;
 
 using System.Diagnostics;
 
-namespace AssetTransferClient
+namespace AssetTransfer
 {
-    class Program
+    public class AssetTransferClient
     {
-        private const string HOST = "localhost";
-        private const int PORT = 50051;
-        private const string WORKING_DIR = @"D:\Desktop\mission_output";
-        
-        private static Bundle.BundleClient bundleClient;
-        private static Asset.AssetClient assetClient;
+        public string Host { get; private set; }
+        public int Port { get; private set; }
+        public string WorkingDir { get; set; }
 
-        public static void Main(string[] args)
+        private Bundle.BundleClient bundleClient;
+        private Asset.AssetClient assetClient;
+
+        private Channel channel;
+
+        public AssetTransferClient(string workingDir, string host = "localhost", int port = 50051)
         {
-            Channel channel = new Channel(HOST + ":" + PORT, ChannelCredentials.Insecure);
+            this.WorkingDir = workingDir;
+            this.Host = host;
+            this.Port = port;
+        }
 
-            bundleClient = new Bundle.BundleClient(channel);
-            assetClient = new Asset.AssetClient(channel);
+        public void Start()
+        {
+            this.channel = new Channel(this.Host + ":" + this.Port, ChannelCredentials.Insecure);
 
-            Console.Write("Enter a bundle ID: ");
+            this.bundleClient = new Bundle.BundleClient(channel);
+            this.assetClient = new Asset.AssetClient(channel);
+
             while (channel.State != ChannelState.Shutdown)
             {
                 int bundleId;
@@ -39,7 +47,6 @@ namespace AssetTransferClient
                 else
                 {
                     Console.WriteLine("Couldn't parse input.\nPress any key to stop the server...");
-                    Console.ReadLine();
                     break;
                 }
             }
@@ -47,7 +54,31 @@ namespace AssetTransferClient
             channel.ShutdownAsync().Wait();
         }
 
-        private static IEnumerable<AssetRequest> GetAssets(int bundleId)
+        public void RequestBundle(int id)
+        {
+            int bundleId;
+            bool validId = int.TryParse(Console.ReadLine(), out bundleId);
+            var assets = GetAssets(bundleId);
+
+            if (validId && !System.Linq.Enumerable.Contains(assets, null))
+            {
+                Recieve(assetClient, assets, bundleId);
+            }
+            else
+            {
+                Console.WriteLine("Couldn't parse input.\nPress any key to stop the server...");
+            }
+        }
+
+        /// <summary>
+        /// Closes the connection
+        /// </summary>
+        public void Close()
+        {
+            channel.ShutdownAsync().Wait();
+        }
+        
+        private IEnumerable<AssetRequest> GetAssets(int bundleId)
         {
             if (bundleId == -1)
                 yield return null;
@@ -58,7 +89,7 @@ namespace AssetTransferClient
             }
         }
 
-        private static async Task Recieve(Asset.AssetClient assetClient, IEnumerable<AssetRequest> requests, int bundleId)
+        private async Task Recieve(Asset.AssetClient assetClient, IEnumerable<AssetRequest> requests, int bundleId)
         {
             // Now that we have the asset ID's we're after, send each asset asynchronously
             using (var call = assetClient.GetAssets())
@@ -73,7 +104,7 @@ namespace AssetTransferClient
                         var response = call.ResponseStream.Current;
                         string assetId = response.AssetId;
                         
-                        FileManager.WriteAsset(WORKING_DIR, bundleId, assetId, response.Content.ToByteArray());
+                        FileManager.WriteAsset(WorkingDir, bundleId, assetId, response.Content.ToByteArray());
 
                         stopwatch.Stop();
 
