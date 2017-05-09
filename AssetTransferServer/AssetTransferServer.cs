@@ -9,6 +9,28 @@ using System.IO;
 
 namespace AssetTransfer
 {
+    public static class GrpcServerHelper
+    {
+        private static bool ServerRunning { get; set; }
+
+        public static void SpecialStart(this Server server)
+        {
+            server.Start();
+            ServerRunning = true;
+        }
+
+        public async static Task SpecialStop(this Server server)
+        {
+            await server.ShutdownAsync();
+            ServerRunning = false;
+        }
+
+        public static bool IsRunning(this Server server)
+        {
+            return ServerRunning;
+        }
+    }
+
     public class AssetTransferServer
     {
         public string Host { get; private set; }
@@ -16,10 +38,14 @@ namespace AssetTransfer
 
         private List<BundleResponse> bundles;
 
-        public AssetTransferServer(string host = "localhost", int port = 50051)
+        private Server server;
+        private string Killword { get; set; }
+
+        public AssetTransferServer(string killword, string host = "localhost", int port = 50051)
         {
             this.Host = host;
             this.Port = port;
+            this.Killword = killword;
 
             // Load directory into a bundle, using ints for this example because no one wants to type GUID's
             bundles = new List<BundleResponse>();
@@ -34,31 +60,29 @@ namespace AssetTransfer
                 return;
             }
 
-            Server server = new Server
+            server = new Server
             {
                 Services = { Bundle.BindService(new BundleImpl(bundles)), Asset.BindService(new AssetImpl()) },
                 Ports = { new ServerPort(Host, Port, ServerCredentials.Insecure) }
             };
-            server.Start();
+            server.SpecialStart();
 
             Console.WriteLine("Server listening on port " + Port);
-
-            while (true)
-            {
-                Console.Write("Enter a bundle (ID,path): ");
-
-                string bundleToLoad = Console.ReadLine();
-                if (bundleToLoad.ToLower() == "exit")
-                    break;
-                else
-                    LoadBundle(bundleToLoad);
-            }
-
-            server.ShutdownAsync().Wait();
         }
 
-        private void LoadBundle(string input)
+        public bool IsRunning()
         {
+            return server.IsRunning();
+        }
+
+        public void LoadBundle(string input)
+        {
+            if (input == Killword)
+            {
+                server.SpecialStop().Wait();
+                return;
+            }
+
             var sp = input.Split(',');
 
             int id;

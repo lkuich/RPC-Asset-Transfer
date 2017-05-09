@@ -27,8 +27,18 @@ namespace App
 
         private static void StartServer()
         {
-            var server = new AssetTransferServer();
+            var server = new AssetTransferServer("exit");
             server.Start();
+            
+            while (server.IsRunning())
+            {
+                Console.Write("Enter a bundle (ID,path): ");
+
+                string bundleToLoad = Console.ReadLine();
+                server.LoadBundle(bundleToLoad);
+            }
+
+            Console.WriteLine("Goodbye!");
         }
 
         private static void StartClient()
