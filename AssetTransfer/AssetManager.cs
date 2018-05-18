@@ -26,7 +26,7 @@ namespace Mb {
             "AmlkGAEgASgFIi4KDkJ1bmRsZVJlc3BvbnNlEgoKAmlkGAEgASgFEhAKCGFz",
             "c2V0X2lkGAMgAygJIhoKDEFzc2V0UmVxdWVzdBIKCgJpZBgBIAEoCSIyCg1B",
             "c3NldFJlc3BvbnNlEhAKCGFzc2V0X2lkGAEgASgJEg8KB2NvbnRlbnQYAiAB",
-            "KAwyPgoGQnVuZGxlEjQKCUdldEJ1bmRsZRIRLm1iLkJ1bmRsZVJlcXVlc3Qa",
+            "KAkyPgoGQnVuZGxlEjQKCUdldEJ1bmRsZRIRLm1iLkJ1bmRsZVJlcXVlc3Qa",
             "Ei5tYi5CdW5kbGVSZXNwb25zZSIAMj8KBUFzc2V0EjYKCUdldEFzc2V0cxIQ",
             "Lm1iLkFzc2V0UmVxdWVzdBoRLm1iLkFzc2V0UmVzcG9uc2UiACgBMAFiBnBy",
             "b3RvMw=="));
@@ -44,7 +44,7 @@ namespace Mb {
   }
   #region Messages
   /// <summary>
-  ///  The requests the bundle by ID
+  /// The requests the bundle by ID
   /// </summary>
   public sealed partial class BundleRequest : pb::IMessage<BundleRequest> {
     private static readonly pb::MessageParser<BundleRequest> _parser = new pb::MessageParser<BundleRequest>(() => new BundleRequest());
@@ -164,7 +164,7 @@ namespace Mb {
   }
 
   /// <summary>
-  ///  Initial response with the ID, number of elements and each filename
+  /// Initial response with the ID, number of elements and each filename
   /// </summary>
   public sealed partial class BundleResponse : pb::IMessage<BundleResponse> {
     private static readonly pb::MessageParser<BundleResponse> _parser = new pb::MessageParser<BundleResponse>(() => new BundleResponse());
@@ -466,9 +466,9 @@ namespace Mb {
 
     /// <summary>Field number for the "content" field.</summary>
     public const int ContentFieldNumber = 2;
-    private pb::ByteString content_ = pb::ByteString.Empty;
+    private string content_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pb::ByteString Content {
+    public string Content {
       get { return content_; }
       set {
         content_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
@@ -514,7 +514,7 @@ namespace Mb {
       }
       if (Content.Length != 0) {
         output.WriteRawTag(18);
-        output.WriteBytes(Content);
+        output.WriteString(Content);
       }
     }
 
@@ -525,7 +525,7 @@ namespace Mb {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(AssetId);
       }
       if (Content.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeBytesSize(Content);
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Content);
       }
       return size;
     }
@@ -556,7 +556,7 @@ namespace Mb {
             break;
           }
           case 18: {
-            Content = input.ReadBytes();
+            Content = input.ReadString();
             break;
           }
         }

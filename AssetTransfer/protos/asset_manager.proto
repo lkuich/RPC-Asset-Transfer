@@ -27,5 +27,5 @@ message AssetRequest {
 
 message AssetResponse {
   string asset_id = 1;
-  bytes content = 2;
+  string content = 2;
 }

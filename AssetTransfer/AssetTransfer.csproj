@@ -65,7 +65,6 @@
   <ItemGroup>
     <Compile Include="AssetManager.cs" />
     <Compile Include="AssetManagerGrpc.cs" />
-    <Compile Include="FileManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

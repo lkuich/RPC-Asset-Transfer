@@ -103,7 +103,7 @@ namespace AssetTransfer
                         var response = call.ResponseStream.Current;
                         string assetId = response.AssetId;
                         
-                        FileManager.WriteAsset(WorkingDir, bundleId, assetId, response.Content.ToByteArray());
+                        // FileManager.WriteAsset(WorkingDir, bundleId, assetId, response.Content.ToByteArray());
 
                         stopwatch.Stop();
 

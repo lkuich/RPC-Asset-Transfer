@@ -21,7 +21,7 @@ namespace App
             var server = new AssetTransferServer("exit");
             server.Start();
 
-            string bundleToLoad = @"1,C:\Users\Loren Kuich\Desktop\assets";
+            string bundleToLoad = @"1,C:\Users\loren\Desktop\graphql";
             server.LoadBundle(bundleToLoad);
 
             Console.WriteLine("Goodbye!");

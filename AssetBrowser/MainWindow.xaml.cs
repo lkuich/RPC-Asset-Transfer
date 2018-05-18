@@ -28,26 +28,32 @@ namespace AssetBrowser
         {
             InitializeComponent();
 
-            Client = new AssetTransferClient(@"C:\Users\Loren Kuich\Desktop\assets");
+            Client = new AssetTransferClient();
         }
 
-        public void NavigateToStream(System.IO.Stream stream)
+        public void NavigateToStream(string src)
         {
             Browser.Dispatcher.Invoke(() =>
             {
-                Browser.NavigateToStream(stream);
+                Browser.NavigateToString(src);
             });
         }
 
         private void Go_Click(object sender, RoutedEventArgs e)
         {
+            var url = IdSearch.Text.Split('/');
+
             int id = 0;
-            int.TryParse(IdSearch.Text, out id);
+            int.TryParse(url[0], out id);
+
+            string item = url[1];
+
             if (id != 0)
             {
-                Client.RequestBundle(id, stream =>
+                Client.RequestBundle(id, (name, src) =>
                 {
-                    NavigateToStream(stream);
+                    if (name == item)
+                        NavigateToStream(src);
                 });
             }
         }
@@ -58,16 +64,14 @@ namespace AssetBrowser
     {
         public string Host { get; private set; }
         public int Port { get; private set; }
-        public string WorkingDir { get; set; }
 
         private Bundle.BundleClient bundleClient;
         private Asset.AssetClient assetClient;
 
         private Channel channel;
 
-        public AssetTransferClient(string workingDir, string host = "localhost", int port = 50051)
+        public AssetTransferClient(string host = "localhost", int port = 50051)
         {
-            this.WorkingDir = workingDir;
             this.Host = host;
             this.Port = port;
 
@@ -76,7 +80,7 @@ namespace AssetBrowser
             this.assetClient = new Asset.AssetClient(channel);
         }
         
-        public void RequestBundle(int bundleId, Action<System.IO.Stream> OnRecieved)
+        public void RequestBundle(int bundleId, Action<string, string> OnRecieved)
         {
             var assets = GetAssets(bundleId);
             if (!Enumerable.Contains(assets, null))
@@ -108,7 +112,7 @@ namespace AssetBrowser
             }
         }
 
-        private async Task Recieve(Asset.AssetClient assetClient, IEnumerable<AssetRequest> requests, int bundleId, Action<System.IO.Stream> OnRecieved)
+        private async Task Recieve(Asset.AssetClient assetClient, IEnumerable<AssetRequest> requests, int bundleId, Action<string, string> OnRecieved)
         {
             // Now that we have the asset ID's we're after, send each asset asynchronously
             using (var call = assetClient.GetAssets())
@@ -120,7 +124,7 @@ namespace AssetBrowser
                         var response = call.ResponseStream.Current;
                         string assetId = response.AssetId;
                         
-                        OnRecieved(new System.IO.MemoryStream(response.Content.ToByteArray()));
+                        OnRecieved(assetId, response.Content);
                         // response.Content.ToByteArray());
                     }
                 });
