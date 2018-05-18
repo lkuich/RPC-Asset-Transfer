@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetTransfer", "AssetTransfer\AssetTransfer.csproj", "{724DFC8C-4B57-4C3F-811C-0463BE2A2829}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetTransferClient", "AssetTransferClient\AssetTransferClient.csproj", "{ACCF4597-3748-4117-8633-1CB767F8CCC3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetTest", "AssetTest\AssetTest.csproj", "{5E53A952-7FB5-4945-9E7C-8A0FACAACE5F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetBrowser", "AssetBrowser\AssetBrowser.csproj", "{EE3B9E64-5AF7-4F58-ABC4-868FA3965670}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,9 +53,20 @@ Global
 		{5E53A952-7FB5-4945-9E7C-8A0FACAACE5F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5E53A952-7FB5-4945-9E7C-8A0FACAACE5F}.Release|x64.ActiveCfg = Release|Any CPU
 		{5E53A952-7FB5-4945-9E7C-8A0FACAACE5F}.Release|x64.Build.0 = Release|Any CPU
+		{EE3B9E64-5AF7-4F58-ABC4-868FA3965670}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE3B9E64-5AF7-4F58-ABC4-868FA3965670}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE3B9E64-5AF7-4F58-ABC4-868FA3965670}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EE3B9E64-5AF7-4F58-ABC4-868FA3965670}.Debug|x64.Build.0 = Debug|Any CPU
+		{EE3B9E64-5AF7-4F58-ABC4-868FA3965670}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE3B9E64-5AF7-4F58-ABC4-868FA3965670}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE3B9E64-5AF7-4F58-ABC4-868FA3965670}.Release|x64.ActiveCfg = Release|Any CPU
+		{EE3B9E64-5AF7-4F58-ABC4-868FA3965670}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8CDDB4BB-6A76-4810-AEF0-DF0485761D65}
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = AssetTransfer\AssetTransfer.csproj

@@ -1,14 +1,59 @@
-using System;
-using Grpc.Core;
-
-using Mb;
-using System.Threading.Tasks;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using Grpc.Core;
+using Mb;
 
-using System.Diagnostics;
-
-namespace AssetTransfer
+namespace AssetBrowser
 {
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        private AssetTransferClient Client { get; set; }
+
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            Client = new AssetTransferClient(@"C:\Users\Loren Kuich\Desktop\assets");
+        }
+
+        public void NavigateToStream(System.IO.Stream stream)
+        {
+            Browser.Dispatcher.Invoke(() =>
+            {
+                Browser.NavigateToStream(stream);
+            });
+        }
+
+        private void Go_Click(object sender, RoutedEventArgs e)
+        {
+            int id = 0;
+            int.TryParse(IdSearch.Text, out id);
+            if (id != 0)
+            {
+                Client.RequestBundle(id, stream =>
+                {
+                    NavigateToStream(stream);
+                });
+            }
+        }
+    }
+
+
     public class AssetTransferClient
     {
         public string Host { get; private set; }
@@ -25,43 +70,18 @@ namespace AssetTransfer
             this.WorkingDir = workingDir;
             this.Host = host;
             this.Port = port;
-        }
 
-        public void Start()
-        {
             this.channel = new Channel(this.Host + ":" + this.Port, ChannelCredentials.Insecure);
-
             this.bundleClient = new Bundle.BundleClient(channel);
             this.assetClient = new Asset.AssetClient(channel);
-
-            while (channel.State != ChannelState.Shutdown)
-            {
-                int bundleId;
-                bool validId = int.TryParse(Console.ReadLine(), out bundleId);
-                var assets = GetAssets(bundleId);
-
-                if (validId && !System.Linq.Enumerable.Contains(assets, null))
-                {
-                    Recieve(assetClient, assets, bundleId);
-                }
-                else
-                {
-                    Console.WriteLine("Couldn't parse input.\nPress any key to stop the server...");
-                    break;
-                }
-            }
-
-            channel.ShutdownAsync().Wait();
         }
-
-        public void RequestBundle(int bundleId)
+        
+        public void RequestBundle(int bundleId, Action<System.IO.Stream> OnRecieved)
         {
-            bool validId = int.TryParse(Console.ReadLine(), out bundleId);
             var assets = GetAssets(bundleId);
-
-            if (validId && !System.Linq.Enumerable.Contains(assets, null))
+            if (!Enumerable.Contains(assets, null))
             {
-                Recieve(assetClient, assets, bundleId);
+                Recieve(assetClient, assets, bundleId, OnRecieved);
             }
             else
             {
@@ -76,7 +96,7 @@ namespace AssetTransfer
         {
             channel.ShutdownAsync().Wait();
         }
-        
+
         private IEnumerable<AssetRequest> GetAssets(int bundleId)
         {
             if (bundleId == -1)
@@ -88,7 +108,7 @@ namespace AssetTransfer
             }
         }
 
-        private async Task Recieve(Asset.AssetClient assetClient, IEnumerable<AssetRequest> requests, int bundleId)
+        private async Task Recieve(Asset.AssetClient assetClient, IEnumerable<AssetRequest> requests, int bundleId, Action<System.IO.Stream> OnRecieved)
         {
             // Now that we have the asset ID's we're after, send each asset asynchronously
             using (var call = assetClient.GetAssets())
@@ -97,21 +117,11 @@ namespace AssetTransfer
                 {
                     while (await call.ResponseStream.MoveNext())
                     {
-                        var stopwatch = new Stopwatch();
-                        stopwatch.Start();
-
                         var response = call.ResponseStream.Current;
                         string assetId = response.AssetId;
                         
-                        FileManager.WriteAsset(WorkingDir, bundleId, assetId, response.Content.ToByteArray());
-
-                        stopwatch.Stop();
-
-                        double ticks = stopwatch.ElapsedTicks;
-                        double milliseconds = (ticks / Stopwatch.Frequency) * 1000;
-                        double nanoseconds = (ticks / Stopwatch.Frequency) * 1000000000;
-
-                        Console.WriteLine(string.Format("Received and Wrote {0} in {1}ms/{2}ns", assetId, Math.Round(milliseconds, 2), Math.Round(nanoseconds, 2)));
+                        OnRecieved(new System.IO.MemoryStream(response.Content.ToByteArray()));
+                        // response.Content.ToByteArray());
                     }
                 });
 

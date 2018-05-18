@@ -11,16 +11,7 @@ namespace App
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Press 1 to start server, 2 for client");
-            int selection = Int32.Parse(Console.ReadLine());
-
-            if (selection == 1)
-            {
-                StartServer();
-            } else if (selection == 2)
-            {
-                StartClient();
-            }
+            StartServer();
 
             Console.ReadLine();
         }
@@ -29,21 +20,16 @@ namespace App
         {
             var server = new AssetTransferServer("exit");
             server.Start();
-            
-            while (server.IsRunning())
-            {
-                Console.Write("Enter a bundle (ID,path): ");
 
-                string bundleToLoad = Console.ReadLine();
-                server.LoadBundle(bundleToLoad);
-            }
+            string bundleToLoad = @"1,C:\Users\Loren Kuich\Desktop\assets";
+            server.LoadBundle(bundleToLoad);
 
             Console.WriteLine("Goodbye!");
         }
 
         private static void StartClient()
         {
-            var client = new AssetTransferClient(@"D:\Desktop\mission_output");
+            var client = new AssetTransferClient(@"C:\Users\Public\TestOutput");
             client.Start();
         }
     }

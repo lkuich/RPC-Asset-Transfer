@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Mb
 {
@@ -13,7 +15,7 @@ namespace Mb
             if (Directory.Exists(dir))
             {
                 var response = new BundleResponse { Id = bundleId };
-                foreach (string filename in Directory.GetFiles(dir))
+                Parallel.ForEach(Directory.GetFiles(dir), (filename) =>
                 {
                     string id = filename.Replace(dir, "").Replace("\\", "");
                     response.AssetId.Add(id);
@@ -21,7 +23,7 @@ namespace Mb
                         id,
                         File.ReadAllBytes(filename)
                     );
-                }
+                });
                 
                 return response;
             }
